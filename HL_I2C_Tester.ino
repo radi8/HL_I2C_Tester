@@ -45,8 +45,13 @@ void loop() {
    Serial.println(incomingByte, BIN);
    Wire.beginTransmission(OTHER_ADDRESS);
    Wire.write(incomingByte);
-   Wire.endTransmission();
-   setOutputPins(incomingByte);
+   if(Wire.endTransmission() == 0){
+    digitalWrite (LED, HIGH);
+   } else {
+    digitalWrite (LED, LOW);
+    Serial.println("Hermes-Lite not connected");
+   }
+//   setOutputPins(incomingByte);
  }
 }
 
