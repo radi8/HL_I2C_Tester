@@ -32,7 +32,9 @@ void setup() {
  
  Wire.begin(THIS_ADDRESS);
  Wire.onReceive(receiveEvent);
+ 
  Serial.begin(9600);
+ delay(500);
  Serial.println("Arduino Hermes-Lite I2C tester");
  Serial.println("copyright (c) Graeme Jury ZL2APV");
  Serial.println();
@@ -42,9 +44,11 @@ void loop() {
  if (Serial.available() > 0){
    incomingByte = Serial.read();
    Serial.print("Data received = 0b");
-   Serial.println(incomingByte, BIN);
+   printBinaryByte(incomingByte);
    Wire.beginTransmission(OTHER_ADDRESS);
+   Wire.write(0x0A);
    Wire.write(incomingByte);
+   Wire.write(0x00);
    if(Wire.endTransmission() == 0){
     digitalWrite (LED, HIGH);
    } else {
@@ -53,6 +57,18 @@ void loop() {
    }
 //   setOutputPins(incomingByte);
  }
+}
+
+void printBinaryByte(uint8_t readValue)
+{
+  // Print the value of the variable "readValue" as an 8 bit binary number
+  for(uint8_t mask = 0x80; mask; mask >>= 1){
+  if(mask  & readValue)
+      Serial.print('1');
+  else
+      Serial.print('0');
+  }
+  Serial.println();
 }
 
 void receiveEvent(int howMany){
@@ -77,4 +93,3 @@ void setOutputPins(uint8_t cmd)
   txValue = ((cmd & 0b01110000) >> 4);
   moxValue = ((cmd & 0b10000000) >> 7);
 }
-
